@@ -12,6 +12,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -67,10 +68,11 @@ public class MainActivity extends AppCompatActivity {
         drawer.setDrawerListener(toggle);
         toggle.syncState();
         sharedPref = getSharedPreferences(getString(R.string.preferences_name), MODE_PRIVATE);
-        boolean firstTime=sharedPref.getBoolean("firstTimeOpen",false);
+        boolean firstTime=sharedPref.getBoolean("firstTimeOpen",true);
         if(firstTime){
-            sharedPref.edit().putBoolean("firstTimeOpen",false);
-            sharedPref.edit().commit();
+            SharedPreferences.Editor ed = sharedPref.edit();
+            ed.putBoolean("firstTimeOpen",false);
+            ed.commit();
             //open popup for first time open
             AlertDialog.Builder builder;
             LayoutInflater inflater;
