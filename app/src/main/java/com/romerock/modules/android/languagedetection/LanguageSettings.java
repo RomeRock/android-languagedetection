@@ -67,7 +67,6 @@ public class LanguageSettings extends AppCompatActivity {
                     case 0:
                         ed.putString(getString(R.string.preferences_schema_language_settings), "en");
                         LocaleHelper.setLocale(LanguageSettings.this, "en");
-                        ed.putString(getString(R.string.preferences_schema_language_settings), "en");
                         Toast.makeText(LanguageSettings.this, getString(R.string.settings_option_language_change, "English"), Toast.LENGTH_SHORT).show();
                         break;
                     case 1:

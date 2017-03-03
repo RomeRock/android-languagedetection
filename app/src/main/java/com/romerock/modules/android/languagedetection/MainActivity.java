@@ -3,6 +3,7 @@ package com.romerock.modules.android.languagedetection;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,7 +13,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -21,6 +21,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.romerock.modules.android.languagedetection.Helpers.LocaleHelper;
+
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
     private AlertDialog alertDialog;
     private SharedPreferences sharedPref;
     private String language;
+    private Typeface font;
+    private SharedPreferences.Editor ed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,35 +74,10 @@ public class MainActivity extends AppCompatActivity {
         drawer.setDrawerListener(toggle);
         toggle.syncState();
         sharedPref = getSharedPreferences(getString(R.string.preferences_name), MODE_PRIVATE);
+        ed = sharedPref.edit();
         boolean firstTime=sharedPref.getBoolean("firstTimeOpen",true);
         if(firstTime){
-            SharedPreferences.Editor ed = sharedPref.edit();
-            ed.putBoolean("firstTimeOpen",false);
-            ed.commit();
-            //open popup for first time open
-            AlertDialog.Builder builder;
-            LayoutInflater inflater;
-            builder = new AlertDialog.Builder(this);
-            inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            builder.setCancelable(true);
-            View view = inflater.inflate(R.layout.pop_up, null);
-            view.findViewById(R.id.popUpOk).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    alertDialog.dismiss();
-                }
-            });
-            view.findViewById(R.id.popUpChange).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    alertDialog.dismiss();
-                    Intent i = new Intent(MainActivity.this, LanguageSettings.class);
-                    startActivity(i);
-                }
-            });
-            builder.setView(view);
-            builder.create();
-            alertDialog = builder.show();
+            popUp();
         }
         language = sharedPref.getString(getString(R.string.preferences_schema_language_settings), "en").toString();
         WebView view = new WebView(this);
@@ -104,16 +85,95 @@ public class MainActivity extends AppCompatActivity {
         view.setBackgroundColor(getResources().getColor(R.color.drawable));
         ((RelativeLayout) findViewById(R.id.relContent)).addView(view);
         view.loadData(getString(R.string.thank_you), "text/html; charset=utf-8", "utf-8");
-        Typeface font = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Bold.ttf");
+        font = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Bold.ttf");
         textLanguage.setTypeface(font);
         font = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Regular.ttf");
         languageDetect.setTypeface(font);
         currencyLanguage.setTypeface(font);
     }
 
+    public void popUp(){
+        SharedPreferences.Editor ed = sharedPref.edit();
+        ed.putBoolean("firstTimeOpen",false);
+        ed.commit();
+        //open popup for first time open
+        AlertDialog.Builder builder;
+        LayoutInflater inflater;
+        builder = new AlertDialog.Builder(this);
+        inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        builder.setCancelable(true);
+        View view = inflater.inflate(R.layout.pop_up, null);
+        view.findViewById(R.id.popUpOk).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+        view.findViewById(R.id.popUpChange).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+                Intent i = new Intent(MainActivity.this, LanguageSettings.class);
+                startActivity(i);
+            }
+        });
+        TextView txtTittleDetect = (TextView) view.findViewById(R.id.txtTittleDetect);
+        font = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Regular.ttf");
+        txtTittleDetect.setTypeface(font);
+        builder.setView(view);
+        builder.create();
+        alertDialog = builder.show();
+    }
+
+    public void popUpDefault(){
+        String lanShow=Resources.getSystem().getConfiguration().locale.getLanguage().toLowerCase();
+        if(lanShow.equals("es"))
+            lanShow="ESPAÑOL";
+        else{
+            if(lanShow.equals("fr"))
+                lanShow="Français";
+            else
+                lanShow="English";
+        }
+        AlertDialog.Builder builder;
+        LayoutInflater inflater;
+        builder = new AlertDialog.Builder(this);
+        inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        builder.setCancelable(true);
+        View view = inflater.inflate(R.layout.pop_up, null);
+        view.findViewById(R.id.popUpOk).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+                Locale current = Resources.getSystem().getConfiguration().locale;
+                String typeLanguage=current.getLanguage().toLowerCase();
+                LocaleHelper.setLocale(MainActivity.this, current.getLanguage().toLowerCase());
+                ed.putString(getString(R.string.preferences_schema_language_settings), typeLanguage);
+                recreate();
+                ed.commit();
+            }
+        });
+        view.findViewById(R.id.popUpChange).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+                Intent i = new Intent(MainActivity.this, LanguageSettings.class);
+                startActivity(i);
+            }
+        });
+        TextView txtTittleDetect = (TextView) view.findViewById(R.id.txtTittleDetect);
+        TextView currencyLanguagePopUp = (TextView) view.findViewById(R.id.currencyLanguagePopUp);
+        currencyLanguagePopUp.setText(lanShow);
+        font = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Regular.ttf");
+        txtTittleDetect.setTypeface(font);
+        builder.setView(view);
+        builder.create();
+        alertDialog = builder.show();
+    }
+
     @Override
     public void onBackPressed() {
-
+        finish();
     }
 
     @Override
@@ -122,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @OnClick({R.id.img_logo_romerock, R.id.follow_twitter, R.id.follow_gitHub, R.id.follow_facebook, R.id.btn_detect})
+    @OnClick({R.id.img_logo_romerock, R.id.follow_twitter, R.id.follow_gitHub, R.id.follow_facebook, R.id.btn_detect, R.id.textLanguage})
     public void onClick(View view) {
         String url = "";
         switch (view.getId()) {
@@ -151,6 +211,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.btn_detect:
                 Intent i = new Intent(MainActivity.this, LanguageSettings.class);
                 startActivity(i);
+                break;
+            case R.id.textLanguage:
+                popUpDefault();
                 break;
         }
     }

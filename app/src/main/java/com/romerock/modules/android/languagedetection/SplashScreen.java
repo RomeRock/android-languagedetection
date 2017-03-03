@@ -24,12 +24,9 @@ public class SplashScreen extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-
 		// Detect language
 		SharedPreferences sharedPrefs= getSharedPreferences(getString(R.string.preferences_name), MODE_PRIVATE);
 		SharedPreferences.Editor ed = sharedPrefs.edit();
-		Locale locale =null;
 		Locale current = getResources().getConfiguration().locale;
 		if(current.getLanguage().toLowerCase().equals("es")){
 			ed.putString(getString(R.string.preferences_schema_language_settings), "es");

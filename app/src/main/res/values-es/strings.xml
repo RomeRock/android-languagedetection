@@ -20,16 +20,16 @@
     <string name="follow_us_facebook_profile">fb://page/337180269970605</string>
     <string name="follow_us_git_hub">https://github.com/RomeRock</string>
     <string name="romerock_page">http://romerock.com</string>
-    <string name="language">\tLenguaje\t</string>
-    <string name="default_settings">Usar valores predeterminados de la configuración</string>
+    <string name="language">\tIdioma\t</string>
+    <string name="default_settings">Usar predeterminado del dispositivo</string>
     <string name="preferences_name">MM_ROMEROCK</string>
     <string name="preferences_schema_language_settings_tittle">lenguageDefinition</string>
     <string name="preferences_schema_language_settings">language</string>
     <string name="settings_option_select_lenguage">Selecciona idioma</string>
     <string name="settings_option_language_change">Tu idioma seleccionado es %1$s</string>
     <string name="settings_preview">Vista Previa</string>
-    <string name="language_popup_content">Hemos detectado que su dispositivo utiliza este lenguaje:</string>
-    <string name="select_language">Selecciona lenguaje</string>
+    <string name="language_popup_content">Detectamos que tu dispositivo usa este idioma:</string>
+    <string name="select_language">Seleccionar idioma</string>
     <string name="name_language">Español</string>
-    <string name="pop_up_change">Cambiar lenguaje</string>
+    <string name="pop_up_change">Cambiar idioma</string>
 </resources>
